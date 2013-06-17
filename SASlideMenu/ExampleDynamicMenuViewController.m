@@ -8,6 +8,7 @@
 
 #import "ExampleDynamicMenuViewController.h"
 #import "ColoredViewController.h"
+#import <QuartzCore/QuartzCore.h>
 
 @interface ExampleDynamicMenuViewController ()<SASlideMenuDataSource,SASlideMenuDelegate, UITableViewDataSource>
 
@@ -27,6 +28,12 @@
         self.selectedHue = 0.0;        
     }
     return self;
+}
+
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+    self.view.layer.cornerRadius = 6;
 }
 
 -(void)tap:(id)sender{
@@ -180,6 +187,16 @@
 }
 #pragma mark -
 #pragma mark SASlideMenuDelegate
+
+const CGFloat hideTransformK = .94;
+- (void)slideMenuIsInSlidingProccess:(UIView *)menu progress:(CGFloat)progress
+{
+    if (menu == self.view)
+    {
+        CGFloat scale = hideTransformK + (1. - hideTransformK) * progress;
+        menu.transform = CGAffineTransformMakeScale(scale, scale);
+    }
+}
 
 -(void) slideMenuWillSlideIn{
     NSLog(@"slideMenuWillSlideIn");

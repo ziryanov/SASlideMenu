@@ -12,6 +12,8 @@
 
 @optional
 
+-(void)slideMenuIsInSlidingProccess:(UIView *)menu progress:(CGFloat)progress;
+
 -(void)slideMenuWillSlideToSide;
 -(void)slideMenuDidSlideToSide;
 

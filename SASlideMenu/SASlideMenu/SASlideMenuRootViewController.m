@@ -77,17 +77,27 @@ typedef enum {
     CGRect bounds = self.view.bounds;
     CGFloat menuSize = [self rightMenuSize];
     controller.view.frame = CGRectMake(-menuSize,0.0,bounds.size.width,bounds.size.height);
+    if ([self.leftMenu.slideMenuDelegate respondsToSelector:@selector(slideMenuIsInSlidingProccess:progress:)])
+        [self.leftMenu.slideMenuDelegate slideMenuIsInSlidingProccess:self.rightMenu.view progress:1];
 }
 
 -(void) slideToSide:(UINavigationController*) controller{
     CGRect bounds = self.view.bounds;
     CGFloat menuSize = [self leftMenuSize];
     controller.view.frame = CGRectMake(menuSize,0.0,bounds.size.width,bounds.size.height);
+    if ([self.leftMenu.slideMenuDelegate respondsToSelector:@selector(slideMenuIsInSlidingProccess:progress:)])
+        [self.leftMenu.slideMenuDelegate slideMenuIsInSlidingProccess:self.leftMenu.view progress:1];
 }
 
 -(void) slideIn:(UINavigationController*) controller{
     CGRect bounds = self.view.bounds;
     controller.view.frame = CGRectMake(0.0,0.0,bounds.size.width,bounds.size.height);
+    if ([self.leftMenu.slideMenuDelegate respondsToSelector:@selector(slideMenuIsInSlidingProccess:progress:)])
+    {
+        [self.leftMenu.slideMenuDelegate slideMenuIsInSlidingProccess:self.leftMenu.view progress:0];
+        if (self.rightMenu)
+            [self.leftMenu.slideMenuDelegate slideMenuIsInSlidingProccess:self.rightMenu.view progress:0];
+    }
 }
 -(void) addShield:(UINavigationController*) controller{
     [controller.view addSubview:self.shieldWithMenu];
@@ -307,6 +317,14 @@ typedef enum {
         
         [movingView setCenter:CGPointMake([movingView center].x + translation.x, [movingView center].y)];
         [gesture setTranslation:CGPointZero inView:[panningView superview]];
+        
+        if ([self.leftMenu.slideMenuDelegate respondsToSelector:@selector(slideMenuIsInSlidingProccess:progress:)])
+        {
+            if (panningState == SASlideMenuPanningStateLeft)
+                [self.leftMenu.slideMenuDelegate slideMenuIsInSlidingProccess:self.rightMenu.view progress:(self.view.frame.size.width - movingView.frame.origin.x) / [self rightMenuSize]];
+            else
+                [self.leftMenu.slideMenuDelegate slideMenuIsInSlidingProccess:self.leftMenu.view progress:movingView.frame.origin.x / [self leftMenuSize]];
+        }
         
         //calculate pan move speed
         if (panningPreviousEventDate != nil) {
